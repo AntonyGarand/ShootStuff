@@ -4,9 +4,9 @@ using System.Collections;
 public class Projectile : MonoBehaviour {
 
     public LayerMask collisionMask;
-    float speed = 10;
-    float damage = 1;
-    float lifeTime = 3;
+    public float speed = 10;
+    public float damage = 1;
+    public float lifeTime = 3;
     float distToHit = 0.1f;
 
     void Start()
@@ -31,6 +31,7 @@ public class Projectile : MonoBehaviour {
         CheckCollision(moveDistance);
         transform.Translate(Vector3.forward * moveDistance);
 	}
+
     void CheckCollision(float moveDistance) {
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;

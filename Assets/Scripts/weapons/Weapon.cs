@@ -11,16 +11,16 @@ public class Weapon : MonoBehaviour {
     public Transform shell;
     public Transform shellEjector;
 
-    MuzzleFlash muzzleFlash;
+    protected MuzzleFlash muzzleFlash;
 
-    float nextShotTime;
+    protected float nextShotTime;
 
-    void Start()
+    public virtual void Start()
     {
         muzzleFlash = GetComponent<MuzzleFlash>();
     }
 
-    public void Shoot(){
+    public virtual void Shoot(){
         if (Time.time > nextShotTime)
         {
             muzzleFlash.Activate();
