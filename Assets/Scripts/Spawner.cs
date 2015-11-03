@@ -3,6 +3,8 @@ using System.Collections;
 
 public class Spawner : MonoBehaviour {
 
+    public bool debugMode;
+
     public Wave[] waves;
     public Enemy enemy;
 
@@ -54,12 +56,24 @@ public class Spawner : MonoBehaviour {
             }
 
 
-            if (enemyRemauningToSpawn > 0 && Time.time > nextSpawnTime)
+            if ((enemyRemauningToSpawn > 0 || currentWave.lastWaveInfinite )&& Time.time > nextSpawnTime)
             {
                 enemyRemauningToSpawn--;
                 nextSpawnTime = Time.time + currentWave.timeBetweenSpawns;
 
-                StartCoroutine(SpawnEnemy());
+                StartCoroutine("SpawnEnemy");
+            }
+        }
+        if (debugMode)
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                StopCoroutine("SpawnEnemy");
+                foreach(Enemy opponent in FindObjectsOfType<Enemy>())
+                {
+                    Destroy(opponent.gameObject);
+                }
+                NextWave();
             }
         }
     }
@@ -89,6 +103,7 @@ public class Spawner : MonoBehaviour {
 
         Enemy spawnedEnemy = Instantiate(enemy, spawnTile.position + Vector3.up, Quaternion.identity) as Enemy;
         spawnedEnemy.OnDeath += OnEnemyDeath;
+        spawnedEnemy.SetCharacteristics(currentWave.moveSpeed, currentWave.damagePerHit, currentWave.health, currentWave.skinColor);
 
 
     }
@@ -137,6 +152,13 @@ public class Spawner : MonoBehaviour {
     {
         public int enemyCount;
         public float timeBetweenSpawns;
+
+        public float moveSpeed;
+        public int damagePerHit;
+        public float health;
+        public Color skinColor;
+
+        public bool lastWaveInfinite;
     }
 
 }

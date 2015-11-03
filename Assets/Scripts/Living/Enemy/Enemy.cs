@@ -24,34 +24,48 @@ public class Enemy : LivingEntity
     float collisionRadius;
     float targetCollisionRadius;
 
-    protected override void Start () {
-        base.Start();
+    void Awake()
+    {
         pathFinder = GetComponent<NavMeshAgent>();
         skinMaterial = GetComponent<Renderer>().material;
-
-        originalColor = skinMaterial.color;
-
         currentState = State.Chasing;
+
         if (GameObject.FindGameObjectWithTag("Player") != null)
         {
             hasTarget = true;
             target = GameObject.FindGameObjectWithTag("Player").transform;
-            targetEntity = target.GetComponent<LivingEntity>();
-            targetEntity.OnDeath += OnTargetDeath;
-
-            collisionRadius = GetComponent<CapsuleCollider>().radius;
             targetCollisionRadius = target.GetComponent<CapsuleCollider>().radius;
-            StartCoroutine(UpdatePath());
+            collisionRadius = GetComponent<CapsuleCollider>().radius;
+            targetEntity = target.GetComponent<LivingEntity>();
         }
-	}
+    }
+
+    protected override void Start() {
+        base.Start();
+        if (hasTarget)
+        {
+            StartCoroutine(UpdatePath());
+            targetEntity.OnDeath += OnTargetDeath;
+        }
+    }
 
     public override void Takehit(float damage, Vector3 hitPoint, Vector3 hitDirection)
     {
-        if(damage >= health)
+        if (damage >= health)
         {
             Destroy(Instantiate(deathEffect.gameObject, hitPoint, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as GameObject, deathEffect.startLifetime);
         }
         base.Takehit(damage, hitPoint, hitDirection);
+    }
+
+    public void SetCharacteristics(float moveSpeed, int _damage, float health, Color skinColor){
+        pathFinder.speed = moveSpeed;
+        damage = _damage;
+        startingHealth = health;
+        pathFinder = GetComponent<NavMeshAgent>();
+        skinMaterial = GetComponent<Renderer>().material;
+        skinMaterial.color = skinColor;
+        originalColor = skinColor;
     }
 
     void OnTargetDeath()

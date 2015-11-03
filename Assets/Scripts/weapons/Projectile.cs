@@ -7,6 +7,9 @@ public class Projectile : MonoBehaviour {
     public float speed = 10;
     public float damage = 1;
     public float lifeTime = 3;
+    public AudioClip shootSound;
+    public AudioClip hitSound;
+
     float distToHit = 0.1f;
 
     void Start()

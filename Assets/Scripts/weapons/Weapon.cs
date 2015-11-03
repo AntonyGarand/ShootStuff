@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Weapon : MonoBehaviour {
+public abstract class Weapon : MonoBehaviour
+{
+    public AudioClip shootSound;
+    AudioSource soundLocation;
 
-    public Transform muzzle;
+    public Transform[] projectileSpawn;
     public Projectile projectile;
     public float msBetweenShots = 100;
     public float muzzleVelocity = 35;
@@ -14,21 +17,24 @@ public class Weapon : MonoBehaviour {
     protected MuzzleFlash muzzleFlash;
 
     protected float nextShotTime;
+    protected bool triggerHasBeenReleased;
 
     public virtual void Start()
     {
         muzzleFlash = GetComponent<MuzzleFlash>();
     }
 
-    public virtual void Shoot(){
-        if (Time.time > nextShotTime)
-        {
-            muzzleFlash.Activate();
-            Projectile newProjectile = Instantiate(projectile, muzzle.position, muzzle.rotation) as Projectile;
-            newProjectile.setSpeed(muzzleVelocity);
-            nextShotTime = Time.time + msBetweenShots / 1000;
-            Instantiate(shell, shellEjector.position, shellEjector.rotation);
-        }
+    protected abstract void Shoot();
+
+    public virtual void OnTriggerHold()
+    {
+        Shoot();
+        triggerHasBeenReleased = false;
+    }
+
+    public virtual void OnTriggerRelease()
+    {
+        triggerHasBeenReleased = true;
     }
 
 }

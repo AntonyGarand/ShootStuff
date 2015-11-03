@@ -11,6 +11,7 @@ public class MapGenerator : MonoBehaviour {
 
     public Transform tilePrefab;
     public Transform obstaclePrefab;
+    public Transform mapFloor;
     public Transform navMeshFloor;
     public Transform navMeshMaskPrefab;
 
@@ -42,7 +43,6 @@ public class MapGenerator : MonoBehaviour {
         currentMap = maps[mapIndex];
         tileMap = new Transform[currentMap.mapSize.x, currentMap.mapSize.y];
         System.Random rnd = new System.Random(currentMap.seed);
-        GetComponent<BoxCollider>().size = new Vector3(currentMap.mapSize.x * tileSize, 0.05f, currentMap.mapSize.y * tileSize);
 
         //Generating coords
         allTileCoords = new List<Coord>();
@@ -129,7 +129,7 @@ public class MapGenerator : MonoBehaviour {
         maskDown.parent = mapHolder;
         maskDown.localScale = new Vector3(currentMap.maximumMapSize.x, 1, (currentMap.maximumMapSize.y - currentMap.mapSize.y) / 2f) * tileSize;
 
-
+        mapFloor.localScale = new Vector3(currentMap.mapSize.x * tileSize, currentMap.mapSize.y * tileSize);
         navMeshFloor.localScale = new Vector3(currentMap.maximumMapSize.x, currentMap.maximumMapSize.y) * tileSize;
 
     }
