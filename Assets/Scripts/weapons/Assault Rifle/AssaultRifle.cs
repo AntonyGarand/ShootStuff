@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-public class machinegun : Weapon {
+public class AssaultRifle : Weapon {
 
 	public enum FireMode { auto, burst, single }
     public FireMode firemode;
@@ -23,7 +23,7 @@ public class machinegun : Weapon {
                 case FireMode.auto:
                     shootBullet();
                     nextShotTime = Time.time + msBetweenShots / 1000;
-                    AudioSource.PlayClipAtPoint(shootSound, Camera.main.transform.position);
+                    playSound();
                     break;
                 case FireMode.burst:
                     if(currentShotsFired >= burstCount)
@@ -32,7 +32,7 @@ public class machinegun : Weapon {
                         currentShotsFired = 0;
                     } else {
                         nextShotTime = Time.time + msBetweenBurstShots / 1000;
-                        AudioSource.PlayClipAtPoint(shootSound, Camera.main.transform.position);
+                        playSound();
                         currentShotsFired++;
                         shootBullet();
                     }
@@ -41,7 +41,7 @@ public class machinegun : Weapon {
                     if (triggerHasBeenReleased)
                     {
                         shootBullet();
-                        AudioSource.PlayClipAtPoint(shootSound, Camera.main.transform.position);
+                        playSound();
                         nextShotTime = Time.time + msBetweenShots / 1000;
                     }
                     break;
@@ -56,7 +56,7 @@ public class machinegun : Weapon {
         foreach (Transform muzzle in projectileSpawn)
         {
             Projectile newProjectile = Instantiate(projectile, muzzle.position, muzzle.rotation) as Projectile;
-            newProjectile.setSpeed(muzzleVelocity);
+            newProjectile.setSpeed(bulletSpeed);
         }
         Instantiate(shell, shellEjector.position, shellEjector.rotation);
     }

@@ -7,6 +7,8 @@ public class Spawner : MonoBehaviour {
 
     public Wave[] waves;
     public Enemy enemy;
+    public Material tileMaterial;
+    Color tileColor;
 
     LivingEntity playerEntity;
     Transform playerTransform;
@@ -32,6 +34,7 @@ public class Spawner : MonoBehaviour {
 
     void Start()
     {
+        tileColor = tileMaterial.color;
         playerEntity = FindObjectOfType<Player>();
         playerTransform = playerEntity.transform;
 
@@ -89,13 +92,12 @@ public class Spawner : MonoBehaviour {
             spawnTile = map.GetTileFromPosition(playerTransform.position);
         }
         Material tileMat = spawnTile.GetComponent<Renderer>().material;
-        Color originalColor = tileMat.color;
         Color flashColor = Color.red;
         float spawnTimer = 0;
 
         while (spawnTimer < spawnDelay)
         {
-            tileMat.color = Color.Lerp(originalColor, flashColor, Mathf.PingPong(spawnTimer * tileFlashSpeed, 1));
+            tileMat.color = Color.Lerp(tileColor, flashColor, Mathf.PingPong(spawnTimer * tileFlashSpeed, 1));
 
             spawnTimer += Time.deltaTime;
             yield return null;

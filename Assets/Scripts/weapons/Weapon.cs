@@ -4,12 +4,11 @@ using System.Collections;
 public abstract class Weapon : MonoBehaviour
 {
     public AudioClip shootSound;
-    AudioSource soundLocation;
 
     public Transform[] projectileSpawn;
     public Projectile projectile;
     public float msBetweenShots = 100;
-    public float muzzleVelocity = 35;
+    public float bulletSpeed = 35;
 
     public Transform shell;
     public Transform shellEjector;
@@ -31,10 +30,15 @@ public abstract class Weapon : MonoBehaviour
         Shoot();
         triggerHasBeenReleased = false;
     }
-
     public virtual void OnTriggerRelease()
     {
         triggerHasBeenReleased = true;
     }
+
+    protected virtual void playSound()
+    {
+        AudioSource.PlayClipAtPoint(shootSound, transform.parent.parent.position);
+    }
+
 
 }

@@ -4,7 +4,7 @@ using System.Collections;
 public class Projectile : MonoBehaviour {
 
     public LayerMask collisionMask;
-    public float speed = 10;
+    private float speed = 10;
     public float damage = 1;
     public float lifeTime = 3;
     public AudioClip shootSound;
