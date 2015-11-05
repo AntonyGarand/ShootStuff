@@ -53,6 +53,6 @@ public class Projectile : MonoBehaviour {
             damageableObject.Takehit(damage, hitPoint, transform.forward);
         }
 
-        GameObject.Destroy(gameObject);
+        Destroy(gameObject);
     }
 }
