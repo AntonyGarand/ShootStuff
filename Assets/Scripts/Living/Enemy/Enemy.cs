@@ -131,7 +131,7 @@ public class Enemy : LivingEntity
                 Vector3 targetPosition = target.position - directionToTarget * (collisionRadius + targetCollisionRadius + attackDistanceThreshold / 2);
                 if (isAlive)
                 {
-                    pathFinder.SetDestination(targetPosition);
+                  //  pathFinder.SetDestination(targetPosition);
                 }
             }
             yield return new WaitForSeconds(refreshRate);

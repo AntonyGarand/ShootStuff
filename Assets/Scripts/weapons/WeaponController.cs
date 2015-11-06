@@ -38,4 +38,12 @@ public class WeaponController : MonoBehaviour {
             equippedWeapon.OnTriggerRelease();
         }
     }
+
+    public float WeaponHeight
+    {
+        get
+        {
+            return weaponHold.position.y;
+        }
+    }
 }

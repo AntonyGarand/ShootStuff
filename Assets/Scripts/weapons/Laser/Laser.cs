@@ -91,17 +91,16 @@ public class Laser : Weapon {
 
             percentDone = (Time.time - startTime) / laserChargeTime;
             shootNow = percentDone >= 1;
-            if (shootNow) { 
-            nextShotTime = Time.time + laserCooldown;
+            if (shootNow) {
+                nextShotTime = Time.time + laserCooldown;
             }
 
-            reflect(30f, projectileSpawn[0].transform.position, projectileSpawn[0].transform.forward, ref positions, shootNow);
+            float width = Mathf.Lerp(laserStartWidth, laserEndWidth, percentDone);
+            reflect(30f, projectileSpawn[0].transform.position, projectileSpawn[0].transform.forward, ref positions, shootNow, width);
             Vector3[] coords = positions.ToArray();
 
             lasers = new GameObject[coords.Length];
 
-            print(shootNow);
-            float width = Mathf.Lerp(laserStartWidth, laserEndWidth, percentDone);
             Vector3 lastCoord = coords[0];
 
             for (int i = 1; i < coords.Length; i++)
@@ -118,17 +117,17 @@ public class Laser : Weapon {
                 lastCoord = coords[i];
                 lRendLaser.SetWidth(width, width);
             }
+            if (shootNow) playSound();
             yield return null;
         }
-        //Destroy the final lasers
+        //Destroy the ending lasers
         for (int i = 0; i < lasers.Length; i++) Destroy(lasers[i]);
     }
 
-    void reflect(float distanceRemaining, Vector3 position, Vector3 direction, ref List<Vector3> positions, bool hitTargets)
+    void reflect(float distanceRemaining, Vector3 position, Vector3 direction, ref List<Vector3> positions, bool hitTargets, float width)
     {
         int mask = obstacleMask ^ (hitTargets ? enemyMask : 0);
         bool hitEnemy = false;
-        float colliderDist = 0f;
         //Potential upgrade: 
         //    Use a break when hitting a wall instead of the recursive from inside the loop. 
         do
@@ -138,8 +137,11 @@ public class Laser : Weapon {
             //TODO: Investigate the infinite loop
             position = hitEnemy ? position + (direction * 0.01f) : position;
             Ray ray = new Ray(position, direction);
+
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit, distanceRemaining, mask))
+            //Spherecast instead of raycast to get the full width of the laser beam.
+            if (Physics.SphereCast(ray, width / 2, out hit, distanceRemaining, mask))
+            //if (Physics.Raycast(ray, out hit, distanceRemaining, mask))
             {
                 //Checks if the collider's layer is contained in the enemy layer
                 int colliderLayer = (int)Mathf.Pow(2, (hit.collider.gameObject.layer));
@@ -151,14 +153,14 @@ public class Laser : Weapon {
                     float newDist = distanceRemaining - hit.distance;
                     Vector3 newDirection = Vector3.Reflect(direction, hit.normal);
                     positions.Add(hit.point);
-                    reflect(newDist, hit.point, newDirection, ref positions, hitTargets);
+                    reflect(newDist, hit.point, newDirection, ref positions, hitTargets, width);
                     return;
                 }
                 //If we hit an enemy, damage it and keep going
                 else
                 {
                     position = hit.point;
-                    damageEnemy(hit.collider, hit.point);
+                    damageEnemy(hit.collider, hit.point, direction);
                 }
             }
             else
@@ -170,12 +172,12 @@ public class Laser : Weapon {
         } while (hitEnemy); 
     }
 
-    void damageEnemy(Collider c, Vector3 hitPoint)
+    void damageEnemy(Collider c, Vector3 hitPoint, Vector3 hitDirection)
     {
         IDamageable damageableObject = c.GetComponent<IDamageable>();
         if (damageableObject != null)
         {
-            damageableObject.Takehit(damage, hitPoint, transform.forward);
+            damageableObject.Takehit(damage, hitPoint, hitDirection);
         }
     }
 
